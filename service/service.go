@@ -28,3 +28,7 @@ func New(c *conf.Config) (s *Service) {
 func (s *Service) CreateArticle(c *gin.Context) {
 	s.dao.CreateArticle(c, article)
 }
+
+func (s *Service) GetArticleList(c *gin.Context) {
+	s.dao.GetArticleList(c, article)
+}

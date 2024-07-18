@@ -1,0 +1,9 @@
+[mongo]
+addrs    = ["localhost:27017"]
+userName = "root"
+passWord = "example"
+maxPool =2
+primaryPreferred=true
+maxIdletime ="1m"
+socketTimeout="500ms"
+connTimeout = "100ms"

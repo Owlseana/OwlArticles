@@ -28,6 +28,7 @@ func startHttp(c *conf.Config) {
 		})
 	})
 	r.POST("/create", srv.CreateArticle)
+	r.POST("/delete", srv.DeleteArticle)
 	r.GET("/list", srv.GetArticleList)
 	r.Run("192.168.128.129:8000")
 }

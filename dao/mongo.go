@@ -66,3 +66,54 @@ func (d *Dao) GetArticleList(c *gin.Context, article *model.Article) (err error)
 
 	return
 }
+
+func (d *Dao) DeleteArticle(c *gin.Context) (err error) {
+	// 获取要删除的文章ID或标题
+	var deleteRequest struct {
+		ID    string `json:"id,omitempty"`
+		Title string `json:"title,omitempty"`
+	}
+
+	if err = c.ShouldBindJSON(&deleteRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Errorf("DeleteArticle ShouldBindJSON error %v ", err)
+		return
+	}
+
+	filter := bson.M{}
+	if deleteRequest.ID != "" {
+		var objectID primitive.ObjectID
+		objectID, err = primitive.ObjectIDFromHex(deleteRequest.ID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+			log.Errorf("DeleteArticle error %v ", err)
+			return
+		}
+		filter["_id"] = objectID
+	}
+
+	if deleteRequest.Title != "" {
+		filter["title"] = deleteRequest.Title
+	}
+
+	if deleteRequest.ID == "" && deleteRequest.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID or Title required"})
+		return
+	}
+
+	// 执行删除操作
+	res, err := d.articleCol.DeleteOne(c, filter)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Errorf("DeleteArticle collection.DeleteOne error %v ", err)
+		return
+	}
+
+	if res.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Article not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Article deleted successfully!"})
+	return
+}

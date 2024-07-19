@@ -32,3 +32,7 @@ func (s *Service) CreateArticle(c *gin.Context) {
 func (s *Service) GetArticleList(c *gin.Context) {
 	s.dao.GetArticleList(c, article)
 }
+
+func (s *Service) DeleteArticle(c *gin.Context) {
+	s.dao.DeleteArticle(c)
+}

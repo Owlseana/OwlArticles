@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"owlarticles/conf"
 	"owlarticles/dao"
 	"owlarticles/model"
@@ -33,6 +34,20 @@ func (s *Service) GetArticleList(c *gin.Context) {
 	s.dao.GetArticleList(c, article)
 }
 
-func (s *Service) DeleteArticle(c *gin.Context) {
-	s.dao.DeleteArticle(c)
+func (s *Service) DeleteArticle(c *gin.Context, param *model.DeleteRequest) {
+	// if err := c.ShouldBindJSON(param); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	log.Errorf("DeleteArticle ShouldBindJSON error %v ", err)
+	// 	return
+	// }
+
+	if param.ID != "" {
+		s.dao.DeleteArticleByID(c, param.ID)
+		return
+	}
+	if param.Title != "" {
+		s.dao.DeleteArticleByTitle(c, param.Title)
+		return
+	}
+	c.JSON(http.StatusBadRequest, gin.H{"error": "ID or Title required"})
 }
